@@ -4,7 +4,7 @@ import { get_encoding } from "tiktoken";
 const encoding = get_encoding("p50k_base");
 
 const App = () => {
-  const [input, setInput] = useState("Testy testy woo");
+  const [input, setInput] = useState("Type words in here");
   const [segments, setSegments] = useState([]);
   const [tokens, setTokens] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -14,7 +14,7 @@ const App = () => {
     const encodedTokens = encoding.encode(input);
     setTokens(encodedTokens);
     const wordSegments = [];
-    encodedTokens.forEach(token => {
+    encodedTokens.forEach((token) => {
       const bytes = encoding.decode([token]);
       const segment = new TextDecoder().decode(bytes);
       wordSegments.push(segment);
@@ -31,22 +31,25 @@ const App = () => {
 
   const handleBitClick = (bitIndex) => {
     // If we're currently showing a selected token, start with that binary
-    const currentBinary = customBinary || 
-      (selectedIndex !== null ? tokens[selectedIndex].toString(2).padStart(16, '0') : '0'.repeat(16));
-    
+    const currentBinary =
+      customBinary ||
+      (selectedIndex !== null
+        ? tokens[selectedIndex].toString(2).padStart(16, "0")
+        : "0".repeat(16));
+
     // Toggle the bit at the clicked position
-    const newBinary = currentBinary.split('');
-    newBinary[bitIndex] = newBinary[bitIndex] === '1' ? '0' : '1';
-    const newBinaryString = newBinary.join('');
-    
+    const newBinary = currentBinary.split("");
+    newBinary[bitIndex] = newBinary[bitIndex] === "1" ? "0" : "1";
+    const newBinaryString = newBinary.join("");
+
     // Convert binary to decimal
     const newDecimal = parseInt(newBinaryString, 2);
-    
+
     try {
       // Try to decode the new token number
       const bytes = encoding.decode([newDecimal]);
       const newSegment = new TextDecoder().decode(bytes);
-      if (bytes && newSegment){
+      if (bytes && newSegment) {
         setCustomBinary(newBinaryString);
         setSelectedIndex(null);
       }
@@ -56,10 +59,10 @@ const App = () => {
   };
 
   const getBinaryGrid = () => {
-    if (customBinary) return customBinary.split('');
-    if (selectedIndex === null) return Array(16).fill('0');
+    if (customBinary) return customBinary.split("");
+    if (selectedIndex === null) return Array(16).fill("0");
     const tokenNum = tokens[selectedIndex];
-    return tokenNum.toString(2).padStart(16, '0').split('');
+    return tokenNum.toString(2).padStart(16, "0").split("");
   };
 
   const getCurrentDisplay = () => {
@@ -73,7 +76,8 @@ const App = () => {
         return `Invalid token (${decimal})`;
       }
     }
-    if (selectedIndex === null) return "Click a square below or one of the segments above";
+    if (selectedIndex === null)
+      return "Click a square below or one of the segments above";
     return `${segments[selectedIndex]} (${tokens[selectedIndex]})`;
   };
 
@@ -93,7 +97,7 @@ const App = () => {
             const tokenString = tokens[index].toString();
             const maxWidth = Math.max(
               segment.length * 12,
-              tokenString.length * 18
+              tokenString.length * 18,
             );
             return (
               <span
@@ -101,7 +105,7 @@ const App = () => {
                 onClick={() => handleTokenClick(index)}
                 className={`px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-800 whitespace-pre
                   transition-all duration-200 cursor-pointer text-center ${
-                    selectedIndex === index ? 'ring-2 ring-blue-500' : ''
+                    selectedIndex === index ? "ring-2 ring-blue-500" : ""
                   }`}
                 style={{ minWidth: `${maxWidth}px` }}
               >
@@ -113,7 +117,9 @@ const App = () => {
       </div>
       <div className="mt-8 w-full flex gap-4 flex-col items-center">
         <div className="w-full">
-          <p><strong>Binary Representation:</strong> {getCurrentDisplay()}</p>
+          <p>
+            <strong>Binary Representation:</strong> {getCurrentDisplay()}
+          </p>
         </div>
         <div className="grid grid-cols-4 gap-4 w-full max-w-xl">
           {getBinaryGrid().map((bit, index) => (
@@ -121,7 +127,7 @@ const App = () => {
               key={index}
               onClick={() => handleBitClick(index)}
               className={`aspect-square rounded-md transition-colors duration-200 cursor-pointer
-                ${bit === '1' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-200 hover:bg-gray-300'}`}
+                ${bit === "1" ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-200 hover:bg-gray-300"}`}
             />
           ))}
         </div>
